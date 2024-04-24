@@ -1,0 +1,13 @@
+﻿{
+  "discord": {
+    "token": "token",
+    "debug_guild_id": 0,
+    "prefix": "a.",
+    "processors": []
+  },
+  "database": {
+    "host": "localhost",
+    "port": 27017,
+    "databse": "astra"
+  }
+}
