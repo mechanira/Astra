@@ -1,14 +1,7 @@
 ﻿using Astra.Configuration;
 using MongoDB.Driver;
-using MongoDB.Driver.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Astra.src.Database
+namespace Astra.Database
 {
     public sealed class DatabaseEngine
     {

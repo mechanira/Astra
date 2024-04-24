@@ -1,12 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Astra.Events;
-using DSharpPlus;
-using DSharpPlus.Commands;
+﻿using DSharpPlus.Commands;
 using DSharpPlus.Commands.EventArgs;
 using DSharpPlus.Commands.Exceptions;
-using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
 namespace Astra.Events.Handlers

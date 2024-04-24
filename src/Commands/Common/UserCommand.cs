@@ -1,13 +1,8 @@
-﻿using Astra.Database.Models;
-using Astra.src.Database;
+﻿using Astra.Database;
+using Astra.Database.Models;
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Astra.Commands.Common
 {

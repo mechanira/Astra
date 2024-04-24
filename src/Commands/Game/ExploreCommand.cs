@@ -1,17 +1,8 @@
-﻿using Astra.Astra;
-using Astra.Configuration;
+﻿using Astra.Database;
 using Astra.Database.Models;
-using Astra.src.Database;
 using DSharpPlus.Commands;
 using DSharpPlus.Entities;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Astra.Commands.Game
 {

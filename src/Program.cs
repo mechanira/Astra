@@ -1,6 +1,6 @@
 ﻿using Astra.Configuration;
-using Astra.src.Database;
-using Astra.src.Events;
+using Astra.Database;
+using Astra.Events;
 using DSharpPlus;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Processors;
@@ -21,7 +21,7 @@ using System.Reflection;
 using DSharpPlusDiscordConfiguration = DSharpPlus.DiscordConfiguration;
 using SerilogLoggerConfiguration = Serilog.LoggerConfiguration;
 
-namespace Astra.Astra
+namespace Astra
 {
     public sealed class Program
     {
