@@ -1,0 +1,30 @@
+services:
+  astra:
+    container_name: astra
+    build: .
+    tty: true
+    stop_signal: SIGINT
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 500MB
+      restart_policy:
+        condition: unless-stopped
+        delay: 30s
+        window: 300s
+    env_file:
+      - .env
+    environment:
+      Database__Host: db
+      Database__Port: 27017
+  db:
+    image: mongo:4
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 500MB
+    volumes:
+      - ./data/db:/data/db
