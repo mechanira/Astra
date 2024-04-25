@@ -367,3 +367,12 @@ FodyWeavers.xsd
 
 # Docker data
 /data
+
+# Extra
+.dockerignore
+.gitattributes
+.gitignore
+Dockerfile
+docker-compose.yml
+LICENSE.txt
+README.md
