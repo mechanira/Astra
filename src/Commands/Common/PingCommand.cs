@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.Commands;
+using DSharpPlus.Commands.ContextChecks;
 using System.ComponentModel;
 
 namespace Astra.Commands.Common
@@ -8,7 +9,7 @@ namespace Astra.Commands.Common
         [Command("ping"), Description("Returns the bot latency")]
         public static ValueTask ExecuteAsync(CommandContext ctx) => ctx.RespondAsync($":ping_pong: Pong! Latency: `{ctx.Client.Ping}ms`");
 
-        [Command("test"), Description("Not for you")]
+        [Command("test"), Description("Not for you"), RequireApplicationOwner]
         public async static ValueTask TestAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("Testing... :black_circle:");

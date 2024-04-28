@@ -36,5 +36,12 @@ namespace Astra
             T[] values = (T[])Enum.GetValues(typeof(T));
             return values[random.Next(values.Length)];
         }
+
+        public static string TimeSpanToString(TimeSpan timeSpan)
+        {
+            if (timeSpan.Hours > 23) { return $"{timeSpan.Days}:{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds}"; }
+            if (timeSpan.Minutes > 59) { return $"{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds}"; }
+            else { return $"{timeSpan.Minutes}:{timeSpan.Seconds}"; }
+        }
     }
 }

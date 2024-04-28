@@ -5,7 +5,7 @@ using DSharpPlus.Exceptions;
 
 namespace Astra.Events.Handlers
 {
-    public sealed class ErrorHandler
+    public sealed class CommandErroredHandler
     {
         [DiscordEvent]
         public static async Task OnErroredAsync(CommandsExtension _, CommandErroredEventArgs eventArgs)

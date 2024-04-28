@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Astra.Database.Models
 {
@@ -16,6 +17,7 @@ namespace Astra.Database.Models
         public double Distance { get; set; }
         public ulong DiscoveredBy { get; set; }
         public DateTime DiscoveryTime { get; set; }
+        public ColonyModel Colony { get; set; }
 
         public PlanetModel()
         {
@@ -36,7 +38,7 @@ namespace Astra.Database.Models
             }
         }
 
-        public async Task Add(IMongoDatabase database)
+        public async Task AddAsync(IMongoDatabase database)
         {
             var collection = database.GetCollection<PlanetModel>("planets");
 
@@ -46,7 +48,7 @@ namespace Astra.Database.Models
         }
 
 
-        public async Task CreateName(IMongoDatabase database)
+        public async Task CreateNameAsync(IMongoDatabase database)
         {
             var collection = database.GetCollection<PlanetModel>("planets");
 
@@ -62,5 +64,25 @@ namespace Astra.Database.Models
 
             Name = $"AST {highestNumber + 1} b";
         }
+
+        public static async Task<PlanetModel> FindAsync(IMongoDatabase database, string name)
+        {
+            var collection = database.GetCollection<PlanetModel>("planets");
+
+            var result = await collection.Find(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
+
+            if (result == null) return null;
+
+            return result;
+        }
+    }
+
+
+    public sealed record ColonyModel
+    {
+        public ulong Owner { get; set; } 
+        public int Level { get; set; } = 1;
+        public int MoneyOutput { get; set; } = 1;
+        public DateTime CreatedAt { get; set; }
     }
 }

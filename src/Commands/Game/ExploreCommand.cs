@@ -24,13 +24,13 @@ namespace Astra.Commands.Game
                 DiscoveredBy = ctx.User.Id,
             };
 
-            await planet.CreateName(Database);
+            await planet.CreateNameAsync(Database);
 
             double mass = planet.Mass;
             string massReferencePlanet = mass > 100 ? "Jupiter" : "Earth";
             double referencePlanetMass = mass > 100 ? mass / 318 : mass;
 
-            await planet.Add(Database);
+            await planet.AddAsync(Database);
 
             DiscordEmbedBuilder embedBuilder = new()
             {
