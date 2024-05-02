@@ -7,27 +7,47 @@ using MongoDB.Driver;
 namespace Astra.Commands.Common
 {
     [Command("user")]
-    public sealed class UserCommand(DatabaseEngine databaseEngine)
+    public sealed class UserCommand
     {
-        private IMongoDatabase Database = databaseEngine.Database;
+        private readonly IMongoDatabase Database;
+
+        public UserCommand(DatabaseEngine databaseEngine) => this.Database = databaseEngine.Database;
 
         [Command("info")]
-        public async ValueTask InfoAsync(CommandContext ctx, DiscordUser user = null)
+        public async ValueTask InfoAsync(CommandContext ctx, DiscordUser? user = null)
         {
+            await ctx.DeferResponseAsync();
+
             user ??= ctx.User;
 
-            var collection = Database.GetCollection<PlanetModel>("planets");
-            var filter = Builders<PlanetModel>.Filter.Eq(x => x.DiscoveredBy, user.Id);
-
-            long planetsDiscovered = await collection.CountDocumentsAsync(filter);
+            var userData = await UserModel.FindUserAsync(Database, user.Id);
+            long planetsDiscovered = await PlanetModel.CountUserPlanetsAsync(Database, user.Id);
 
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = user.Username + "'s Info",
-                Description = $"**Planets Discovered: {planetsDiscovered}**"
+                Description = $"Credits: ${userData.Money:N0}\nPlanets Discovered: {planetsDiscovered}"
             };
 
             await ctx.RespondAsync(embedBuilder);
+        }
+
+        [Command("update")]
+        public async ValueTask UpdateAsync(CommandContext ctx, DiscordUser? user = null)
+        {
+            await ctx.DeferResponseAsync();
+
+            user ??= ctx.User;
+
+            UserModel userData = new()
+            {
+                Id = user.Id,
+                Username = user.Username,
+            };
+
+            await userData.AddAsync(Database);
+
+            await ctx.RespondAsync($"User updated.");
         }
     }
 }

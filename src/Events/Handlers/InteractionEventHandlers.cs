@@ -28,15 +28,27 @@ namespace Astra.Events.Handlers
                     string planetName = eventArgs.Message.Embeds[0].Author.Name;
 
                     var planet = await PlanetModel.FindAsync(Database, planetName);
+                    var user = await UserModel.FindUserAsync(Database, eventArgs.User.Id);
                     var colony = planet.Colony;
 
+                    bool success = user.Buy( colony.LevelUpAmount() );
+                    if (!success) { await SendMessageAsync(eventArgs.Interaction, "Insufficient money.", true); return; }
+
                     colony.Level++;
+                    colony.MoneyOutput = (ulong)(colony.MoneyOutput * 1.5);
+
                     await planet.AddAsync(Database);
+                    await user.AddAsync(Database);
 
                     await SendMessageAsync(eventArgs.Interaction, $"Colony has been upgraded to level {colony.Level}!", true);
 
+                    string levelUpAmount = TextCommandUtils.AbbreviateLargeNumbers(colony.LevelUpAmount());
+                    string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
+
                     DiscordEmbedBuilder embedBuilder = new(message.Embeds[0]);
                     embedBuilder.Fields[0].Value = colony.Level.ToString();
+                    embedBuilder.Fields[1].Value = $"{colony.MoneyOutput:N0}";
+                    embedBuilder.Description = description;
 
                     await eventArgs.Message.ModifyAsync(embedBuilder.Build()); break;
             }

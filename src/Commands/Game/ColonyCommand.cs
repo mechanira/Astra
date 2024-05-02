@@ -8,23 +8,32 @@ using MongoDB.Driver;
 namespace Astra.Commands.Game
 {
     [Command("colony")]
-    public sealed class ColonyCommand(DatabaseEngine databaseEngine)
+    public sealed class ColonyCommand
     {
-        IMongoDatabase Database = databaseEngine.Database;
+        private readonly IMongoDatabase Database;
 
-        [Command("menu"), DefaultGroupCommand]
+        public ColonyCommand(DatabaseEngine databaseEngine) => this.Database = databaseEngine.Database;
+
+        [Command("view"), DefaultGroupCommand]
         public async ValueTask ColonyAsync(CommandContext ctx, string planetName)
         {
+            await ctx.DeferResponseAsync();
+
             var planet = await PlanetModel.FindAsync(Database, planetName);
 
             if (planet == null) { await ctx.RespondAsync("Please enter a valid planet name."); return; }
-            if (planet.Colony == null) { await ctx.RespondAsync($"Colony on planet `{planet.Name}` already exists."); return; }
 
-            var colony = planet.Colony;
+            ColonyModel colony = planet.Colony;
+
+            if (colony == null) { await ctx.RespondAsync($"Planet doesn't have a colony."); return; }
+
+            string levelUpAmount = TextCommandUtils.AbbreviateLargeNumbers(colony.LevelUpAmount());
+            string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
 
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = $"Colony Menu",
+                Description = description,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
                     Name = planet.Name
@@ -45,9 +54,44 @@ namespace Astra.Commands.Game
             await ctx.RespondAsync(messageBuilder);
         }
 
+        [Command("user")]
+        public async ValueTask UserAsync(CommandContext ctx, DiscordUser? user = null)
+        {
+            await ctx.DeferResponseAsync();
+
+            user ??= ctx.User;
+
+            var collection = Database.GetCollection<PlanetModel>("planets");
+            var filter = Builders<PlanetModel>.Filter.Eq(x => x.Colony.Owner, user.Id);
+            var planets = collection.Find(filter).ToList().OrderByDescending(x => x.Colony.Level);
+
+            string description = string.Empty;
+
+            foreach (var planet in planets.Take(10))
+            {
+                description += $"{planet.Name} - Level {planet.Colony.Level}\n";
+            }
+            if (planets.Count() > 10) { description += "..."; }
+
+            DiscordEmbedBuilder embedBuilder = new()
+            {
+                Title = "User Colonies",
+                Description = description == string.Empty ? "*No colonies found*" : description,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = user.Username,
+                    IconUrl = user.AvatarUrl
+                }
+            };
+
+            await ctx.RespondAsync(embedBuilder);
+        }
+
         [Command("create")]
         public async ValueTask CreateAsync(CommandContext ctx, string planetName)
         {
+            await ctx.DeferResponseAsync();
+
             var planet = await PlanetModel.FindAsync(Database, planetName);
 
             if (planet == null) { await ctx.RespondAsync("No planet found."); return; }
@@ -64,6 +108,4 @@ namespace Astra.Commands.Game
             await ctx.RespondAsync("Colony has been successfully created!");
         }
     }
-
-
 }

@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace Astra.Database.Models
 {
@@ -17,18 +17,18 @@ namespace Astra.Database.Models
         public double Distance { get; set; }
         public ulong DiscoveredBy { get; set; }
         public DateTime DiscoveryTime { get; set; }
-        public ColonyModel Colony { get; set; }
+        public ColonyModel? Colony { get; set; }
 
         public PlanetModel()
         {
             Random rng = new();
 
-            string[] types = { "Terrestrial", "Super-Earth", "Ice Giant", "Gas Giant" };
+            string[] types = ["Terrestrial", "Super-Earth", "Ice Giant", "Gas Giant"];
             Type = types[rng.Next(types.Length)];
 
             switch(Type)
             {
-                case "Terrestrial": Mass = rng.NextDouble(0.125, 15); break;
+                case "Terrestrial": Mass = rng.NextDouble(0.0125, 15); break;
 
                 case "Super-Earth": Mass = rng.NextDouble(2, 10); break;
 
@@ -65,7 +65,7 @@ namespace Astra.Database.Models
             Name = $"AST {highestNumber + 1} b";
         }
 
-        public static async Task<PlanetModel> FindAsync(IMongoDatabase database, string name)
+        public static async Task<PlanetModel?> FindAsync(IMongoDatabase database, string name)
         {
             var collection = database.GetCollection<PlanetModel>("planets");
 
@@ -75,6 +75,22 @@ namespace Astra.Database.Models
 
             return result;
         }
+
+        public static async Task<long> CountUserPlanetsAsync(IMongoDatabase database, ulong userId)
+        {
+            var planetCollection = database.GetCollection<PlanetModel>("planets");
+            var filter = Builders<PlanetModel>.Filter.Eq(x => x.DiscoveredBy, userId);
+
+            return await planetCollection.CountDocumentsAsync(filter);
+        }
+
+        public static async Task<long> CountAllPlanetsAsync(IMongoDatabase database)
+        {
+            var planetCollection = database.GetCollection<PlanetModel>("planets");
+            var filter = Builders<PlanetModel>.Filter.Empty;
+
+            return await planetCollection.CountDocumentsAsync(filter);
+        }
     }
 
 
@@ -82,7 +98,14 @@ namespace Astra.Database.Models
     {
         public ulong Owner { get; set; } 
         public int Level { get; set; } = 1;
-        public int MoneyOutput { get; set; } = 1;
+        public ulong MoneyOutput { get; set; } = 100;
         public DateTime CreatedAt { get; set; }
+
+        public ulong LevelUpAmount()
+        {
+            var amount = 1000 * Math.Pow(1.5, Level - 1);
+
+            return (ulong)amount;
+        }
     }
 }

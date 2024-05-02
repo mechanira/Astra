@@ -6,16 +6,18 @@ using MongoDB.Driver;
 
 namespace Astra.Commands.Game
 {
-    public sealed class ExploreCommand(DatabaseEngine databaseEngine)
+    public sealed class ExploreCommand
     {
-        private IMongoDatabase Database = databaseEngine.Database;
+        private readonly IMongoDatabase Database;
+
+        public ExploreCommand(DatabaseEngine databaseEngine) => this.Database = databaseEngine.Database;
 
         [Command("explore")]
         public async ValueTask ExecuteAsync(CommandContext ctx)
         {
-            Random rng = new();
+            await ctx.DeferResponseAsync();
 
-            int distance = rng.Next(4, 5_000);
+            int distance = new Random().Next(4, 1000);
 
             PlanetModel planet = new()
             {
@@ -27,7 +29,7 @@ namespace Astra.Commands.Game
             await planet.CreateNameAsync(Database);
 
             double mass = planet.Mass;
-            string massReferencePlanet = mass > 100 ? "Jupiter" : "Earth";
+            string massReferencePlanet = mass > 100 ? "Jupiter" : "Earth"; // if mass exceeds 100 earth masses, use jupiter masses (318x earth)
             double referencePlanetMass = mass > 100 ? mass / 318 : mass;
 
             await planet.AddAsync(Database);
@@ -35,7 +37,7 @@ namespace Astra.Commands.Game
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = "Planet Discovered",
-                Description = $"Name: {planet.Name}\nType: {planet.Type}\nDistance: {distance:N0} LY\nMass: ~{referencePlanetMass:N0}x {massReferencePlanet}"
+                Description = $"Name: {planet.Name}\nType: {planet.Type}\nDistance: {distance:N0} LY\nMass: ~{Math.Round(referencePlanetMass, 2)}x {massReferencePlanet}"
             };
 
             await ctx.RespondAsync(embedBuilder);

@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Astra
 {
@@ -39,9 +40,36 @@ namespace Astra
 
         public static string TimeSpanToString(TimeSpan timeSpan)
         {
-            if (timeSpan.Hours > 23) { return $"{timeSpan.Days}:{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds}"; }
-            if (timeSpan.Minutes > 59) { return $"{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds}"; }
-            else { return $"{timeSpan.Minutes}:{timeSpan.Seconds}"; }
+            if (timeSpan.Days > 0) { return $"{timeSpan.Days}:{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
+            if (timeSpan.Hours > 0) { return $"{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
+            else { return $"{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
+        }
+
+        public static string AbbreviateLargeNumbers(ulong value)
+        {
+            int mag = (int)(Math.Floor(Math.Log10(value)) / 3); // Truncates to 6, divides to 2
+            double divisor = Math.Pow(10, mag * 3);
+
+            double shortNumber = value / divisor;
+
+            string suffix = "";
+            switch (mag)
+            {
+                case 1:
+                    suffix = "k";
+                    break;
+                case 2:
+                    suffix = "m";
+                    break;
+                case 3:
+                    suffix = "b";
+                    break;
+                case 4:
+                    suffix = "t";
+                    break;
+            }
+
+            return Math.Round(shortNumber, 2).ToString() + suffix;
         }
     }
 }

@@ -10,7 +10,6 @@ namespace Astra.Commands.Common
         public async ValueTask ExecuteAsync(CommandContext ctx)
         {
             var currentProcess = Process.GetCurrentProcess();
-
             TimeSpan startTime = DateTime.UtcNow - currentProcess.StartTime.ToUniversalTime();
             double memory = (double)currentProcess.PrivateMemorySize64 / 1_000_000;
 
