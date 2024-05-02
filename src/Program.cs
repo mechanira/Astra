@@ -107,6 +107,7 @@ namespace Astra
             });
 
             serviceCollection.AddSingleton<DatabaseEngine>();
+            serviceCollection.AddSingleton<TimedEvents>();
 
 
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
@@ -124,6 +125,8 @@ namespace Astra
             {
                 serviceProvider.GetRequiredService<ILogger<Program>>().LogError(error, "Failed to connect to the database");
             }
+
+            TimedEvents timedEvents = serviceProvider.GetRequiredService<TimedEvents>();
 
             IReadOnlyDictionary<int, CommandsExtension> commandsExtensions = await discordClient.UseCommandsAsync(new CommandsConfiguration
             {
@@ -172,6 +175,8 @@ namespace Astra
             eventManager.RegisterEventHandlers(discordClient);
 
             await discordClient.StartAsync();
+
+            timedEvents.Start();
 
             await Task.Delay(-1);
         }
