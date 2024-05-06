@@ -42,12 +42,12 @@ namespace Astra.Events.Handlers
 
                     await SendMessageAsync(eventArgs.Interaction, $"Colony has been upgraded to level {colony.Level}!", true);
 
-                    string levelUpAmount = TextCommandUtils.AbbreviateLargeNumbers(colony.LevelUpAmount());
+                    string levelUpAmount = AstraUtilities.Humanize(colony.LevelUpAmount());
                     string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
 
                     DiscordEmbedBuilder embedBuilder = new(message.Embeds[0]);
                     embedBuilder.Fields[0].Value = colony.Level.ToString();
-                    embedBuilder.Fields[1].Value = $"{colony.MoneyOutput:N0}";
+                    embedBuilder.Fields[1].Value = $"${ AstraUtilities.Humanize(colony.MoneyOutput) } per hour";
                     embedBuilder.Description = description;
 
                     await eventArgs.Message.ModifyAsync(embedBuilder.Build()); break;

@@ -37,7 +37,7 @@ namespace Astra.Commands.Game
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = "Planet Discovered",
-                Description = $"Name: {planet.Name}\nType: {planet.Type}\nDistance: {distance:N0} LY\nMass: ~{Math.Round(referencePlanetMass, 2)}x {massReferencePlanet}"
+                Description = $"Name: {planet.Name.DisplayPlanetName()}\nType: {planet.Type}\nDistance: {distance:N0} LY\nMass: ~{Math.Round(referencePlanetMass, 2)}x {massReferencePlanet}"
             };
 
             await ctx.RespondAsync(embedBuilder);

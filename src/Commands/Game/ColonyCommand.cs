@@ -27,7 +27,7 @@ namespace Astra.Commands.Game
 
             if (colony == null) { await ctx.RespondAsync($"Planet doesn't have a colony."); return; }
 
-            string levelUpAmount = TextCommandUtils.AbbreviateLargeNumbers(colony.LevelUpAmount());
+            string levelUpAmount = AstraUtilities.Humanize(colony.LevelUpAmount());
             string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
 
             DiscordEmbedBuilder embedBuilder = new()
@@ -36,11 +36,11 @@ namespace Astra.Commands.Game
                 Description = description,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    Name = planet.Name
+                    Name = planet.Name.DisplayPlanetName()
                 }
             };
             embedBuilder.AddField("Level", colony.Level.ToString(), true);
-            embedBuilder.AddField("Output", colony.MoneyOutput.ToString(), true);
+            embedBuilder.AddField("Output", $"${ AstraUtilities.Humanize(colony.MoneyOutput) } per hour", true);
 
             if (colony.Owner != ctx.User.Id) { await ctx.RespondAsync(embedBuilder); return; }
 
@@ -69,7 +69,11 @@ namespace Astra.Commands.Game
 
             foreach (var planet in planets.Take(10))
             {
-                description += $"{planet.Name} - Level {planet.Colony.Level}\n";
+                var colony = planet.Colony;
+
+                string humanizedValue = AstraUtilities.Humanize(colony.MoneyOutput);
+
+                description += $"{planet.Name.DisplayPlanetName()} - Level {colony.Level} - ${humanizedValue}/h" + "\n";
             }
             if (planets.Count() > 10) { description += "..."; }
 
@@ -95,7 +99,7 @@ namespace Astra.Commands.Game
             var planet = await PlanetModel.FindAsync(Database, planetName);
 
             if (planet == null) { await ctx.RespondAsync("No planet found."); return; }
-            if (planet.Colony != null) { await ctx.RespondAsync($"Colony on planet `{planet.Name}` already exists."); return; }
+            if (planet.Colony != null) { await ctx.RespondAsync($"Colony on planet `{ planet.Name.DisplayPlanetName() }` already exists."); return; }
 
             ColonyModel colony = new()
             {

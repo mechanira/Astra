@@ -11,10 +11,13 @@ namespace Astra.Events
     {
         private readonly SystemTimers.Timer Timer;
         private readonly IMongoDatabase Database;
+        private const int HOURLY_INTERVAL = 6;
 
         public TimedEvents(DatabaseEngine databaseEngine)
         {
-            Timer = new SystemTimers.Timer(TimeSpan.FromMinutes(10))
+            TimeSpan timerInterval = TimeSpan.FromMinutes(60 / HOURLY_INTERVAL);
+
+            Timer = new SystemTimers.Timer(timerInterval)
             {
                 AutoReset = true
             };
@@ -38,7 +41,7 @@ namespace Astra.Events
             {
                 var colony = planet.Colony;
 
-                var payout = colony.MoneyOutput / 6; // divide the payout you get in 10 minutes
+                var payout = colony.MoneyOutput / HOURLY_INTERVAL;
 
                 var user = await UserModel.FindUserAsync(Database, colony.Owner);
                 user.Money += (ulong)payout;

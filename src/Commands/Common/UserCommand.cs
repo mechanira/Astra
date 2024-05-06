@@ -21,12 +21,14 @@ namespace Astra.Commands.Common
             user ??= ctx.User;
 
             var userData = await UserModel.FindUserAsync(Database, user.Id);
-            long planetsDiscovered = await PlanetModel.CountUserPlanetsAsync(Database, user.Id);
+            long planetsDiscovered = await PlanetModel.CountPlanetsAsync(Database, user.Id);
+
+            string humanizedMoney = AstraUtilities.Humanize(userData.Money);
 
             DiscordEmbedBuilder embedBuilder = new()
             {
                 Title = user.Username + "'s Info",
-                Description = $"Credits: ${userData.Money:N0}\nPlanets Discovered: {planetsDiscovered}"
+                Description = $"Credits: ${humanizedMoney}\nPlanets Discovered: {planetsDiscovered}"
             };
 
             await ctx.RespondAsync(embedBuilder);

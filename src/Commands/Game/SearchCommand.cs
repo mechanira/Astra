@@ -18,10 +18,7 @@ namespace Astra.Commands.Game
         {
             await ctx.DeferResponseAsync();
 
-            var collection = Database.GetCollection<PlanetModel>("planets");
-
-            var planet = await collection.Find(x => x.Name.Equals(query, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
-
+            var planet = await PlanetModel.FindAsync(Database, query);
             if (planet == null)
             {
                 await ctx.RespondAsync("No planet has been found.");
@@ -56,7 +53,7 @@ namespace Astra.Commands.Game
                 Description = description,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    Name = planet.Name,
+                    Name = planet.Name.DisplayPlanetName(),
                 },
                 Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
                 {

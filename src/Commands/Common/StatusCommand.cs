@@ -18,8 +18,8 @@ namespace Astra.Commands.Common
                 Title = "Bot Status"
             };
 
-            embedBuilder.AddField("Uptime", TextCommandUtils.TimeSpanToString(startTime));
-            embedBuilder.AddField("Memory usage", $"{Math.Round(memory, 2)} MB");
+            embedBuilder.AddField( "Uptime", AstraUtilities.TimeSpanToString(startTime) );
+            embedBuilder.AddField( "Memory usage", $"{ Math.Round(memory, 2) } MB" );
 
             await ctx.RespondAsync(embedBuilder);
         }

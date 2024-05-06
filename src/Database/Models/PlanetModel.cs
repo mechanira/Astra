@@ -62,21 +62,21 @@ namespace Astra.Database.Models
 
             int highestNumber = numbers.Any() ? numbers.Max() : 0;
 
-            Name = $"AST {highestNumber + 1} b";
+            Name = $"AST{highestNumber + 1}b";
         }
 
         public static async Task<PlanetModel?> FindAsync(IMongoDatabase database, string name)
         {
             var collection = database.GetCollection<PlanetModel>("planets");
 
-            var result = await collection.Find(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
+            var result = await collection.Find(x => x.Name.Equals(name.Replace(" ", ""), StringComparison.CurrentCultureIgnoreCase)).FirstOrDefaultAsync();
 
             if (result == null) return null;
 
             return result;
         }
 
-        public static async Task<long> CountUserPlanetsAsync(IMongoDatabase database, ulong userId)
+        public static async Task<long> CountPlanetsAsync(IMongoDatabase database, ulong userId)
         {
             var planetCollection = database.GetCollection<PlanetModel>("planets");
             var filter = Builders<PlanetModel>.Filter.Eq(x => x.DiscoveredBy, userId);
@@ -84,7 +84,7 @@ namespace Astra.Database.Models
             return await planetCollection.CountDocumentsAsync(filter);
         }
 
-        public static async Task<long> CountAllPlanetsAsync(IMongoDatabase database)
+        public static async Task<long> CountPlanetsAsync(IMongoDatabase database)
         {
             var planetCollection = database.GetCollection<PlanetModel>("planets");
             var filter = Builders<PlanetModel>.Filter.Empty;

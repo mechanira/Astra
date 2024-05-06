@@ -1,10 +1,13 @@
 ﻿using DSharpPlus.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using MongoDB.Driver;
+using System.Text.RegularExpressions;
 
 namespace Astra
 {
-    public static partial class TextCommandUtils
+    public static partial class AstraUtilities
     {
+        [GeneratedRegex(@"([A-Za-z]+)(\d+)([a-zA-Z])", RegexOptions.Compiled)] private static partial Regex _planetNameRegex();
+
         public static string GetDisplayName(this DiscordUser user)
         {
             if (user is DiscordMember member)
@@ -21,6 +24,18 @@ namespace Astra
             }
 
             return $"{user.Username}#{user.Discriminator}";
+        }
+
+        public static string DisplayPlanetName(this string planetName)
+        {
+            Match match = _planetNameRegex().Matches(planetName).First();
+
+            string concatenatedMatches = string.Join(" ",
+                Enumerable.Range(1, match.Groups.Count - 1)
+                          .Select(i => match.Groups[i].Value)
+            );
+
+            return concatenatedMatches;
         }
 
         public static double NextDouble(
@@ -45,15 +60,15 @@ namespace Astra
             else { return $"{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
         }
 
-        public static string AbbreviateLargeNumbers(ulong value)
+        public static string Humanize(this ulong value)
         {
-            int mag = (int)(Math.Floor(Math.Log10(value)) / 3); // Truncates to 6, divides to 2
-            double divisor = Math.Pow(10, mag * 3);
+            int magnitude = (int)(Math.Floor(Math.Log10(value)) / 3); // Truncates to 6, divides to 2
+            double divisor = Math.Pow(10, magnitude * 3);
 
             double shortNumber = value / divisor;
 
             string suffix = "";
-            switch (mag)
+            switch (magnitude)
             {
                 case 1:
                     suffix = "k";
@@ -69,7 +84,7 @@ namespace Astra
                     break;
             }
 
-            return Math.Round(shortNumber, 2).ToString() + suffix;
+            return Math.Round(shortNumber, 3).ToString() + suffix;
         }
     }
 }

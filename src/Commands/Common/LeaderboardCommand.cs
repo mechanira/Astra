@@ -1,10 +1,8 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Astra.Database;
+﻿using Astra.Database;
 using Astra.Database.Models;
 using DSharpPlus.Commands;
 using DSharpPlus.Commands.Trees.Metadata;
 using DSharpPlus.Entities;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Astra.Commands.Common
@@ -46,7 +44,7 @@ namespace Astra.Commands.Common
                 Description = "",
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"{await PlanetModel.CountAllPlanetsAsync(Database)} planets discovered"
+                    Text = $"{await PlanetModel.CountPlanetsAsync(Database)} planets discovered"
                 }
             };
 
