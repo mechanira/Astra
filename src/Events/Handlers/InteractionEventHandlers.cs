@@ -30,12 +30,14 @@ namespace Astra.Events.Handlers
                     var planet = await PlanetModel.FindAsync(Database, planetName);
                     var user = await UserModel.FindUserAsync(Database, eventArgs.User.Id);
                     var colony = planet.Colony;
+                    
+                    if (colony.Level >= 50) { await SendMessageAsync(eventArgs.Interaction, "Max colony level reached.", true); return; }
 
                     bool success = user.Buy( colony.LevelUpAmount() );
                     if (!success) { await SendMessageAsync(eventArgs.Interaction, "Insufficient money.", true); return; }
 
                     colony.Level++;
-                    colony.MoneyOutput = (ulong)(colony.MoneyOutput * 1.5);
+                    colony.MoneyOutput = (long)(colony.MoneyOutput * 1.5);
 
                     await planet.AddAsync(Database);
                     await user.AddAsync(Database);
@@ -43,7 +45,7 @@ namespace Astra.Events.Handlers
                     await SendMessageAsync(eventArgs.Interaction, $"Colony has been upgraded to level {colony.Level}!", true);
 
                     string levelUpAmount = AstraUtilities.Humanize(colony.LevelUpAmount());
-                    string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
+                    string description = colony.Level < 50 ? $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}" : "*Max level reached*";
 
                     DiscordEmbedBuilder embedBuilder = new(message.Embeds[0]);
                     embedBuilder.Fields[0].Value = colony.Level.ToString();

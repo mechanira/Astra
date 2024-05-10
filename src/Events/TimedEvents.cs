@@ -44,7 +44,7 @@ namespace Astra.Events
                 var payout = colony.MoneyOutput / HOURLY_INTERVAL;
 
                 var user = await UserModel.FindUserAsync(Database, colony.Owner);
-                user.Money += (ulong)payout;
+                user.Money += (long)payout;
                 await user.AddAsync(Database);
             }
 

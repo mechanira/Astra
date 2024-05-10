@@ -55,12 +55,12 @@ namespace Astra
 
         public static string TimeSpanToString(TimeSpan timeSpan)
         {
-            if (timeSpan.Days > 0) { return $"{timeSpan.Days}:{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
-            if (timeSpan.Hours > 0) { return $"{timeSpan.Hours}:{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
+            if (timeSpan.Days > 0) { return $"{timeSpan.Days}:{timeSpan.Hours:D2}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}"; }
+            if (timeSpan.Hours > 0) { return $"{timeSpan.Hours}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}"; }
             else { return $"{timeSpan.Minutes}:{timeSpan.Seconds:D2}"; }
         }
 
-        public static string Humanize(this ulong value)
+        public static string Humanize(this long value)
         {
             int magnitude = (int)(Math.Floor(Math.Log10(value)) / 3); // Truncates to 6, divides to 2
             double divisor = Math.Pow(10, magnitude * 3);
@@ -71,16 +71,22 @@ namespace Astra
             switch (magnitude)
             {
                 case 1:
-                    suffix = "k";
+                    suffix = "K";
                     break;
                 case 2:
-                    suffix = "m";
+                    suffix = "M";
                     break;
                 case 3:
-                    suffix = "b";
+                    suffix = "B";
                     break;
                 case 4:
-                    suffix = "t";
+                    suffix = "T";
+                    break;
+                case 5:
+                    suffix = "Qa";
+                    break;
+                case 6:
+                    suffix = "Qi";
                     break;
             }
 

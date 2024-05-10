@@ -9,7 +9,7 @@ namespace Astra.Database.Models
         [BsonId]
         public required ulong Id { get; set; }
         public string Username { get; set; }
-        public ulong Money { get; set; }
+        public long Money { get; set; }
         public List<ObjectId> DiscoveredPlanets { get; set; }
         public List<ObjectId> ColonizedPlanets { get; set; }
 
@@ -37,7 +37,7 @@ namespace Astra.Database.Models
             return user;
         }
 
-        public bool Buy(ulong amount) // handle transaction
+        public bool Buy(long amount) // handle transaction
         {
             if (amount > this.Money)
             {
