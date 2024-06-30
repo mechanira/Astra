@@ -98,14 +98,14 @@ namespace Astra.Database.Models
     {
         public ulong Owner { get; set; } 
         public int Level { get; set; } = 1;
-        public ulong MoneyOutput { get; set; } = 100;
+        public long MoneyOutput { get; set; } = 100;
         public DateTime CreatedAt { get; set; }
 
-        public ulong LevelUpAmount()
+        public long LevelUpAmount()
         {
             var amount = 1000 * Math.Pow(1.5, Level - 1);
 
-            return (ulong)amount;
+            return (long)amount;
         }
     }
 }

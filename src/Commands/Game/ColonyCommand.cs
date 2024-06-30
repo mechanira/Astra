@@ -28,7 +28,7 @@ namespace Astra.Commands.Game
             if (colony == null) { await ctx.RespondAsync($"Planet doesn't have a colony."); return; }
 
             string levelUpAmount = AstraUtilities.Humanize(colony.LevelUpAmount());
-            string description = $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}";
+            string description = colony.Level < 50 ? $"Upgrade to level {colony.Level + 1}: ${levelUpAmount}" : "*Max level reached*";
 
             DiscordEmbedBuilder embedBuilder = new()
             {

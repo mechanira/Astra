@@ -19,24 +19,18 @@ namespace Astra.Commands.Common
         {
             await ctx.DeferResponseAsync();
 
-            var collection = Database.GetCollection<PlanetModel>("planets");
+            var collection = Database.GetCollection<UserModel>("users");
 
-            var filter = Builders<PlanetModel>.Filter.Empty;
-            var planets = collection.Find(filter).ToList();
-            Dictionary<ulong, long> userPlanets = new();
+            var filter = Builders<UserModel>.Filter.Empty;
+            var userData = collection.Find(filter)
+                .ToList();
+            Dictionary<ulong, long> users = new();
 
-            foreach (var planet in planets)
+            foreach (var user in userData)
             {
-                ulong id = planet.DiscoveredBy;
-
-                if (!userPlanets.ContainsKey(id))
-                {
-                    userPlanets.Add(planet.DiscoveredBy, 0);
-                }
-
-                userPlanets[id]++;
+                users[user.Id] = await PlanetModel.CountPlanetsAsync(Database, user.Id);
             }
-            var sortedUsers = userPlanets.OrderByDescending(pair => pair.Value);
+            var sortedUsers = users.OrderByDescending(pair => pair.Value);
 
             DiscordEmbedBuilder embedBuilder = new()
             {
@@ -52,6 +46,34 @@ namespace Astra.Commands.Common
             foreach (var user in sortedUsers.Take(10))
             {
                 embedBuilder.Description += $"#{i} <@{user.Key}> - {user.Value}\n"; i++;
+            }
+
+            await ctx.RespondAsync(embedBuilder);
+        }
+
+        [Command("balance")]
+        public async ValueTask BalanceLeaderboard(CommandContext ctx)
+        {
+            await ctx.DeferResponseAsync();
+
+            var collection = Database.GetCollection<UserModel>("users");
+
+            var filter = Builders<UserModel>.Filter.Empty;
+            var userData = collection.Find(filter)
+                .ToList()
+                .OrderByDescending(x => x.Money)
+                .Take(10);
+
+            DiscordEmbedBuilder embedBuilder = new()
+            {
+                Title = "Balance",
+                Description = "",
+            };
+
+            int i = 1;
+            foreach (var user in userData)
+            {
+                embedBuilder.Description += $"#{i} <@{user.Id}> - { user.Money.Humanize() }\n"; i++;
             }
 
             await ctx.RespondAsync(embedBuilder);
