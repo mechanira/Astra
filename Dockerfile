@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 
-COPY *.csproj .
+COPY Astra.csproj .
 RUN dotnet restore
 
 COPY Astra.sln Astra.sln
